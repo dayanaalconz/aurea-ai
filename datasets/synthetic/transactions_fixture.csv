@@ -1,0 +1,13 @@
+transaction_id,account_id,transaction_date,description,amount,currency,transaction_type,category,merchant
+txn_001,checking_001,2026-01-05,Monthly salary,3000.00,EUR,income,salary,Employer
+txn_002,checking_001,2026-01-06,Rent,-1000.00,EUR,expense,housing,Landlord
+txn_003,checking_001,2026-01-10,Groceries,-200.00,EUR,expense,groceries,Mercadona
+txn_004,checking_001,2026-01-15,Restaurant,-100.00,EUR,expense,restaurants,Restaurant A
+txn_005,checking_001,2026-01-20,Transfer to savings,-500.00,EUR,transfer,transfer,
+txn_006,savings_001,2026-01-20,Transfer from checking,500.00,EUR,transfer,transfer,
+txn_007,checking_001,2026-02-05,Monthly salary,3000.00,EUR,income,salary,Employer
+txn_008,checking_001,2026-02-06,Rent,-1000.00,EUR,expense,housing,Landlord
+txn_009,checking_001,2026-02-10,Groceries,-250.00,EUR,expense,groceries,Mercadona
+txn_010,checking_001,2026-02-15,Restaurant,-200.00,EUR,expense,restaurants,Restaurant B
+txn_011,checking_001,2026-02-20,Transfer to savings,-500.00,EUR,transfer,transfer,
+txn_012,savings_001,2026-02-20,Transfer from checking,500.00,EUR,transfer,transfer,
