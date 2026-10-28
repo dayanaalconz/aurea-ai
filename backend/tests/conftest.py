@@ -152,3 +152,75 @@ def financial_tools() -> Generator[FinancialTools, None, None]:
 
     Base.metadata.drop_all(engine)
     engine.dispose()
+
+@pytest.fixture
+def populated_session() -> Generator[Session, None, None]:
+    """Provide a database session populated with ground-truth transactions."""
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+
+    Base.metadata.create_all(engine)
+
+    transactions = load_transactions_from_csv(FIXTURE_PATH)
+
+    with Session(engine) as session:
+        repository = TransactionRepository(session)
+        repository.add_many(transactions)
+
+        yield session
+
+    Base.metadata.drop_all(engine)
+    engine.dispose()
+
+@pytest.fixture
+def financial_tools() -> Generator[FinancialTools, None, None]:
+    """Provide financial AI tools backed by deterministic test data."""
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+
+    Base.metadata.create_all(engine)
+
+    transactions = load_transactions_from_csv(FIXTURE_PATH)
+
+    with Session(engine) as session:
+        repository = TransactionRepository(session)
+        repository.add_many(transactions)
+
+        analytics_service = FinancialAnalyticsService(repository)
+        tools = FinancialTools(analytics_service)
+
+        yield tools
+
+    Base.metadata.drop_all(engine)
+    engine.dispose()
+
+@pytest.fixture
+def financial_tools() -> Generator[FinancialTools, None, None]:
+    """Provide financial AI tools backed by deterministic fixture data."""
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+
+    Base.metadata.create_all(engine)
+
+    transactions = load_transactions_from_csv(FIXTURE_PATH)
+
+    with Session(engine) as session:
+        repository = TransactionRepository(session)
+        repository.add_many(transactions)
+
+        analytics_service = FinancialAnalyticsService(repository)
+        tools = FinancialTools(analytics_service)
+
+        yield tools
+
+    Base.metadata.drop_all(engine)
+    engine.dispose()

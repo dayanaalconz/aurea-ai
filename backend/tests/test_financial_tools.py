@@ -262,3 +262,156 @@ def test_largest_expenses_tool_returns_transaction_evidence(
 
     assert result.expenses[1].transaction_id == "txn_008"
     assert result.expenses[1].amount == Decimal("1000.00")
+
+def test_financial_summary_tool_returns_grounded_evidence(
+    populated_session,
+) -> None:
+    """Financial summary tool must return deterministic financial evidence."""
+    repository = TransactionRepository(populated_session)
+    service = FinancialAnalyticsService(repository)
+    tools = FinancialTools(service)
+
+    result = tools.get_financial_summary()
+
+    assert result.currency == "EUR"
+    assert result.total_income == Decimal("6000.00")
+    assert result.total_expenses == Decimal("2750.00")
+    assert result.net_cash_flow == Decimal("3250.00")
+
+def test_top_merchants_tool_returns_grounded_evidence(
+    populated_session,
+) -> None:
+    """Top merchants tool must expose deterministic ranked evidence."""
+    repository = TransactionRepository(populated_session)
+    service = FinancialAnalyticsService(repository)
+    tools = FinancialTools(service)
+
+    result = tools.get_top_merchants(
+        TopMerchantsToolInput(limit=2)
+    )
+
+    assert result.currency == "EUR"
+    assert len(result.merchants) == 2
+
+    assert result.merchants[0].merchant == "Landlord"
+    assert result.merchants[0].amount == Decimal("2000.00")
+
+    assert result.merchants[1].merchant == "Mercadona"
+    assert result.merchants[1].amount == Decimal("450.00")
+
+def test_largest_expenses_tool_returns_grounded_evidence(
+    populated_session,
+) -> None:
+    """Largest expenses tool must return persisted transaction evidence."""
+    repository = TransactionRepository(populated_session)
+    service = FinancialAnalyticsService(repository)
+    tools = FinancialTools(service)
+
+    result = tools.get_largest_expenses(
+        LargestExpensesToolInput(limit=2)
+    )
+
+    assert result.currency == "EUR"
+    assert len(result.expenses) == 2
+
+    assert result.expenses[0].transaction_id == "txn_002"
+    assert result.expenses[0].amount == Decimal("1000.00")
+
+    assert result.expenses[1].transaction_id == "txn_008"
+    assert result.expenses[1].amount == Decimal("1000.00")
+
+def test_financial_summary_tool_returns_grounded_evidence(
+    financial_tools: FinancialTools,
+) -> None:
+    """Summary tool must return deterministic financial evidence."""
+    result = financial_tools.get_financial_summary()
+
+    assert result.currency == "EUR"
+    assert result.total_income == Decimal("6000.00")
+    assert result.total_expenses == Decimal("2750.00")
+    assert result.net_cash_flow == Decimal("3250.00")
+
+def test_top_merchants_tool_returns_ranked_evidence(
+    financial_tools: FinancialTools,
+) -> None:
+    """Top-merchants tool should preserve deterministic ranking."""
+    tool_input = TopMerchantsToolInput(limit=2)
+
+    result = financial_tools.get_top_merchants(tool_input)
+
+    assert result.currency == "EUR"
+    assert len(result.merchants) == 2
+
+    assert result.merchants[0].merchant == "Landlord"
+    assert result.merchants[0].amount == Decimal("2000.00")
+    assert result.merchants[0].transaction_count == 2
+
+    assert result.merchants[1].merchant == "Mercadona"
+    assert result.merchants[1].amount == Decimal("450.00")
+    assert result.merchants[1].transaction_count == 2
+
+def test_largest_expenses_tool_returns_transaction_evidence(
+    financial_tools: FinancialTools,
+) -> None:
+    """Largest-expenses tool should expose grounded transaction evidence."""
+    tool_input = LargestExpensesToolInput(limit=2)
+
+    result = financial_tools.get_largest_expenses(tool_input)
+
+    assert result.currency == "EUR"
+    assert len(result.expenses) == 2
+
+    assert result.expenses[0].transaction_id == "txn_002"
+    assert result.expenses[0].amount == Decimal("1000.00")
+    assert result.expenses[0].category == "housing"
+
+    assert result.expenses[1].transaction_id == "txn_008"
+    assert result.expenses[1].amount == Decimal("1000.00")
+    assert result.expenses[1].category == "housing"
+
+def test_financial_summary_tool_returns_grounded_evidence(
+    financial_tools: FinancialTools,
+) -> None:
+    """Summary tool values must originate from deterministic analytics."""
+    result = financial_tools.get_financial_summary()
+
+    assert result.currency == "EUR"
+    assert result.total_income == Decimal("6000.00")
+    assert result.total_expenses == Decimal("2750.00")
+    assert result.net_cash_flow == Decimal("3250.00")
+
+def test_top_merchants_tool_returns_ranked_evidence(
+    financial_tools: FinancialTools,
+) -> None:
+    """Merchant tool should expose deterministic ranked spending."""
+    result = financial_tools.get_top_merchants(
+        TopMerchantsToolInput(limit=2)
+    )
+
+    assert result.currency == "EUR"
+    assert len(result.merchants) == 2
+
+    assert result.merchants[0].merchant == "Landlord"
+    assert result.merchants[0].amount == Decimal("2000.00")
+    assert result.merchants[0].transaction_count == 2
+
+    assert result.merchants[1].merchant == "Mercadona"
+    assert result.merchants[1].amount == Decimal("450.00")
+
+def test_largest_expenses_tool_returns_transaction_evidence(
+    financial_tools: FinancialTools,
+) -> None:
+    """Largest-expense tool should expose traceable transaction evidence."""
+    result = financial_tools.get_largest_expenses(
+        LargestExpensesToolInput(limit=2)
+    )
+
+    assert result.currency == "EUR"
+    assert len(result.expenses) == 2
+
+    assert result.expenses[0].transaction_id == "txn_002"
+    assert result.expenses[0].amount == Decimal("1000.00")
+    assert result.expenses[0].category == "housing"
+
+    assert result.expenses[1].transaction_id == "txn_008"
+    assert result.expenses[1].amount == Decimal("1000.00")
